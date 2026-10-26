@@ -28,7 +28,7 @@ A fast, static portfolio for security engineering, applied cryptography, real-ti
 
 ## Local development
 
-Node 22 or newer is recommended.
+Node 24 or newer is recommended (Astro requires at least 22.23.4).
 
 ```bash
 npm install
