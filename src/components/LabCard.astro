@@ -1,0 +1,27 @@
+---
+import type { Lab } from '../data/labs';
+
+interface Props {
+  lab: Lab;
+}
+
+const { lab } = Astro.props;
+---
+
+<a class="lab-card reveal" href={`/lab/${lab.slug}/`}>
+  <div class="lab-card-top">
+    <span class="lab-index">{lab.index} / LAB</span>
+    <span class="lab-date">{lab.date}</span>
+  </div>
+
+  <h3 class="lab-title">{lab.title}</h3>
+  <p class="lab-summary">{lab.summary}</p>
+  <div class="lab-command"><code>{lab.command}</code></div>
+
+  <div class="lab-footer">
+    <div class="lab-tags">
+      {lab.tags.map((tag) => <span class="chip">{tag}</span>)}
+    </div>
+    <span class="lab-read">{lab.readTime} →</span>
+  </div>
+</a>

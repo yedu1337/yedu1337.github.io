@@ -1,0 +1,103 @@
+---
+import LabLayout from '../../layouts/LabLayout.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'objective', label: 'Objective' },
+  { id: 'command', label: 'Command' },
+  { id: 'output', label: 'Output' },
+  { id: 'analysis', label: 'Analysis' },
+  { id: 'remediation', label: 'Remediation' },
+  { id: 'lesson', label: 'Lesson' },
+];
+---
+
+<LabLayout
+  title="Nmap: building a full TCP inventory"
+  subtitle="A full-range scan is slow. That is the point: you get a baseline you can reproduce."
+  kicker="Enumeration / Nmap"
+  description="A full TCP port scan with service detection against an isolated Metasploitable 2 virtual machine."
+  meta={[
+    { label: 'Environment', value: 'Kali Linux · VirtualBox' },
+    { label: 'Target', value: 'Metasploitable 2 (isolated)' },
+    { label: 'Tools', value: 'Nmap' },
+    { label: 'Date', value: '2026-07-16' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/7-nmap-scan`}
+  outcomes={[
+    { value: '65,535', label: 'TCP ports' },
+    { value: '1', label: 'isolated target' },
+    { value: '1', label: 'evidence file' },
+    { value: '0', label: 'production systems' },
+  ]}
+>
+  <section id="objective" class="article-section">
+    <h2>Objective</h2>
+    <p>
+      Build a complete TCP inventory of the lab target, including service detection, and
+      save the raw output as evidence. The goal was not to exploit anything. It was to
+      practice a repeatable enumeration step that comes before exploitation or remediation.
+    </p>
+  </section>
+
+  <section id="command" class="article-section">
+    <h2>Command</h2>
+    <div class="article-code">
+      nmap -p- -sV 192.168.55.198 -oN nmap-all-ports.txt
+    </div>
+    <ul>
+      <li><code>-p-</code> scans all 65,535 TCP ports instead of the default top 1,000.</li>
+      <li><code>-sV</code> probes open ports to identify services and versions.</li>
+      <li><code>-oN</code> writes a human-readable report that can be committed as evidence.</li>
+    </ul>
+  </section>
+
+  <section id="output" class="article-section">
+    <h2>Output</h2>
+    <p>
+      The scan produced a complete port inventory and service fingerprint. The raw output is
+      stored in <code>nmap-all-ports.txt</code> in the repository. I intentionally did not
+      turn this note into a list of “interesting ports” — the inventory is the artifact.
+    </p>
+    <p>
+      Metasploitable 2 is designed to expose many services. The useful question is not
+      “how many ports are open?” but “which of these services are expected, which are
+      unnecessary, and which are exposed to the wrong network?”
+    </p>
+  </section>
+
+  <section id="analysis" class="article-section">
+    <h2>Analysis</h2>
+    <p>
+      A full-range scan takes longer than the default top-1,000 scan, but it removes a blind
+      spot. Service detection adds another pass: Nmap sends probes and compares the responses
+      against its service fingerprints. The result is a starting map, not a verdict.
+    </p>
+    <p>
+      The most useful comparison is against a baseline. If a service appears that was not
+      present yesterday, that is a signal. If a management service is reachable from a
+      network where it should not be, that is a bigger signal.
+    </p>
+  </section>
+
+  <section id="remediation" class="article-section">
+    <h2>Remediation</h2>
+    <ul>
+      <li>Close or firewall services that are not required for the lab exercise.</li>
+      <li>Patch exposed services and remove default applications.</li>
+      <li>Restrict management interfaces to a dedicated management network.</li>
+      <li>Keep the lab segmented from the home LAN and the internet.</li>
+      <li>Monitor for new listeners and unexpected service versions.</li>
+    </ul>
+  </section>
+
+  <section id="lesson" class="article-section">
+    <h2>Lesson</h2>
+    <p>
+      Enumeration is a habit, not a one-off command. Save the raw output, note the command
+      and date, and compare against a baseline. And keep the scope boringly explicit: this
+      scan was against an isolated VM on a host-only network, not a public target.
+    </p>
+  </section>
+</LabLayout>

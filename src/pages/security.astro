@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout title="Security & disclosure" description="Responsible disclosure policy and security posture for Yedukrishna's portfolio and public projects.">
+  <header class="article-header container">
+    <div class="article-kicker">Security <span>/</span> Disclosure</div>
+    <h1 class="article-title">Security & disclosure</h1>
+    <p class="article-subtitle">
+      I care about the security of the things I build. If you find a vulnerability in this
+      site or one of my public projects, please tell me privately and give me a chance to fix
+      it before it becomes public.
+    </p>
+  </header>
+
+  <section class="section container">
+    <SectionLabel index="01" label="Scope" />
+
+    <div class="security-list">
+      <div class="security-item">
+        <h3>In scope</h3>
+        <p>
+          This website, Ghost-Proxy, and Guardian-Eye. I am interested in issues that affect
+          confidentiality, integrity, or availability of those projects.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>Out of scope</h3>
+        <p>
+          Third-party services, social engineering, physical attacks, denial-of-service
+          testing, and any system I do not own. Lab targets and intentionally vulnerable VMs
+          are not production systems and should not be treated as such.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>How to report</h3>
+        <p>
+          Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a> with a description, steps to
+          reproduce, and the impact you observed. If you need an encrypted channel, say so in
+          the first message and we can arrange one. Please do not access, modify, or exfiltrate
+          data that is not yours.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>What I will do</h3>
+        <p>
+          Acknowledge your report, investigate, and keep you updated. I aim to respond within
+          a few days. If the issue is valid, I will fix it and credit you unless you prefer to
+          stay anonymous.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>Safe harbor</h3>
+        <p>
+          Good-faith research that respects privacy and does not disrupt service is welcome.
+          I will not pursue legal action for accidental issues caused by research conducted
+          within this scope. This is not a bug bounty program.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <SectionLabel index="02" label="Security posture" />
+
+    <div class="security-list">
+      <div class="security-item">
+        <h3>Static by design</h3>
+        <p>
+          The portfolio is a static site. There is no application server, database, login, or
+          user-generated content to attack.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>No trackers</h3>
+        <p>
+          No analytics scripts, advertising pixels, or third-party fonts. The site does not
+          set cookies.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>Least-privilege automation</h3>
+        <p>
+          GitHub Actions use scoped permissions, pinned action versions, and a separate
+          review step for project data. The project sync runs on a schedule and opens a pull
+          request instead of pushing straight to the main branch.
+        </p>
+      </div>
+      <div class="security-item">
+        <h3>Dependency hygiene</h3>
+        <p>
+          Dependabot and CodeQL are enabled for the portfolio repository. Builds run in CI
+          before deployment.
+        </p>
+      </div>
+    </div>
+
+    <div class="article-callout" style="margin-top: 32px;">
+      <strong>Machine-readable policy</strong>
+      A <a href="/.well-known/security.txt">security.txt</a> file is published at the
+      standard location. The canonical URL is <code>{SITE.siteUrl}/.well-known/security.txt</code>.
+    </div>
+  </section>
+</BaseLayout>

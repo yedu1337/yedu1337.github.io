@@ -1,0 +1,58 @@
+name: Sync profile README
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'profile-readme/README.md'
+      - 'src/data/projects.json'
+      - 'site.config.json'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish profile README
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout portfolio
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Check for profile token
+        id: profile
+        env:
+          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+        run: |
+          if [ -n "$PROFILE_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::PROFILE_TOKEN is not configured; skipping profile README sync."
+          fi
+
+      - name: Checkout profile repository
+        if: steps.profile.outputs.enabled == 'true'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ${{ github.repository_owner }}/${{ vars.PROFILE_REPO || github.repository_owner }}
+          token: ${{ secrets.PROFILE_TOKEN }}
+          path: profile-repo
+
+      - name: Publish README
+        if: steps.profile.outputs.enabled == 'true'
+        run: |
+          cp profile-readme/README.md profile-repo/README.md
+          cd profile-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- README.md; then
+            echo "Profile README is already current."
+            exit 0
+          fi
+          git add README.md
+          git commit -m "chore: sync profile README"
+          git push

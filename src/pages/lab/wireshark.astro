@@ -1,0 +1,104 @@
+---
+import LabLayout from '../../layouts/LabLayout.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'objective', label: 'Objective' },
+  { id: 'capture', label: 'Capture' },
+  { id: 'observations', label: 'Observations' },
+  { id: 'analysis', label: 'Analysis' },
+  { id: 'next', label: 'What I would add' },
+  { id: 'lesson', label: 'Lesson' },
+];
+---
+
+<LabLayout
+  title="Wireshark: reading a path through ICMP"
+  subtitle="Localhost, the gateway, and the internet. Same protocol, three different paths."
+  kicker="Packet analysis / Wireshark"
+  description="A packet-capture exercise comparing ICMP echo requests and replies to localhost, a LAN gateway, and a public host."
+  meta={[
+    { label: 'Environment', value: 'Wireshark · local host' },
+    { label: 'Destinations', value: '127.0.0.1 · 10.0.2.1 · google.com' },
+    { label: 'Tools', value: 'Wireshark · ping' },
+    { label: 'Date', value: '2026-07-11' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/5-wireshark`}
+  outcomes={[
+    { value: '3', label: 'destinations' },
+    { value: '4', label: 'requests each' },
+    { value: '0', label: 'failed replies' },
+    { value: '1', label: 'capture file' },
+  ]}
+>
+  <section id="objective" class="article-section">
+    <h2>Objective</h2>
+    <p>
+      Capture ICMP echo requests and replies to three destinations and compare the
+      round-trip time. The point was to practice capture filters, timestamps, and reading a
+      path — not to discover a new protocol.
+    </p>
+  </section>
+
+  <section id="capture" class="article-section">
+    <h2>Capture</h2>
+    <p>
+      I sent four echo requests to each destination and captured the traffic in Wireshark.
+      The filter below keeps echo requests and replies:
+    </p>
+    <div class="article-code">
+      icmp.type == 8 || icmp.type == 0
+    </div>
+    <ul>
+      <li><code>127.0.0.1</code> — the local stack, no network path.</li>
+      <li><code>10.0.2.1</code> — the VirtualBox gateway on the local network.</li>
+      <li><code>google.com</code> — a public host reached through the internet.</li>
+    </ul>
+  </section>
+
+  <section id="observations" class="article-section">
+    <h2>Observations</h2>
+    <ul>
+      <li>Each destination returned four echo requests and four echo replies.</li>
+      <li>Localhost was the fastest: the packets never left the machine.</li>
+      <li>The gateway was fast: one LAN hop, no internet path.</li>
+      <li>Google was the slowest: more hops, more queues, more variability.</li>
+      <li>No requests failed.</li>
+    </ul>
+  </section>
+
+  <section id="analysis" class="article-section">
+    <h2>Analysis</h2>
+    <p>
+      ICMP is a simple probe, but it makes path length visible. The localhost path exercises
+      the kernel’s loopback path. The gateway path exercises the virtual network and the
+      local link. The public path adds routing, peering, and the destination’s response
+      policy.
+    </p>
+    <p>
+      The comparison is a baseline, not a latency benchmark. ICMP can be deprioritized, and
+      four packets are not enough to characterize jitter. A useful next step would be to
+      repeat the capture under load and compare with TCP handshake timing.
+    </p>
+  </section>
+
+  <section id="next" class="article-section">
+    <h2>What I would add</h2>
+    <ul>
+      <li>Timestamp deltas and a small table of min/avg/max RTT per destination.</li>
+      <li>A traceroute capture to correlate hops with latency.</li>
+      <li>TCP handshake timing for a more realistic application path.</li>
+      <li>Repeated runs to separate noise from a stable difference.</li>
+    </ul>
+  </section>
+
+  <section id="lesson" class="article-section">
+    <h2>Lesson</h2>
+    <p>
+      A packet capture is only useful if you know what question you are asking. Here the
+      question was “where does the time go?” The answer was visible in the path, not in a
+      single number.
+    </p>
+  </section>
+</LabLayout>

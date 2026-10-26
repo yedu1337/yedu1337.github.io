@@ -1,0 +1,201 @@
+{
+  "generatedAt": "2026-10-26T17:18:10.203Z",
+  "projects": [
+    {
+      "slug": "ghost-proxy",
+      "name": "Ghost-Proxy",
+      "tagline": "An encrypted SOCKS5 tunnel for hostile networks.",
+      "description": "A self-hosted SOCKS5 proxy with a TLS 1.3 + PSK tunnel, ChaCha20-Poly1305, traffic padding, and a single-binary client and gateway.",
+      "url": "https://github.com/yedu1337/Ghost-Proxy",
+      "homepage": "",
+      "language": "Go",
+      "topics": [
+        "encryption",
+        "go",
+        "networking",
+        "privacy",
+        "proxy",
+        "socks5",
+        "tls"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 95,
+      "category": "featured",
+      "pinned": true,
+      "createdAt": "2026-10-25T17:33:43Z",
+      "pushedAt": "2026-10-25T19:50:38Z",
+      "release": "v0.2.1",
+      "license": "MIT",
+      "highlights": [
+        "TLS 1.3 + PSK authentication",
+        "ChaCha20-Poly1305",
+        "Traffic padding",
+        "Single-binary client & gateway"
+      ],
+      "caseStudy": "/work/ghost-proxy/",
+      "cover": "ghost-proxy"
+    },
+    {
+      "slug": "guardian-eye",
+      "name": "Guardian-Eye",
+      "tagline": "Real-time fall, gesture, and voice emergency detection.",
+      "description": "A multi-modal emergency detection system combining YOLOv8 pose estimation, gesture recognition, keyword spotting, and timed sensor fusion.",
+      "url": "https://github.com/yedu1337/Guardian-Eye",
+      "homepage": "",
+      "language": "Python / JavaScript",
+      "topics": [
+        "computer-vision",
+        "emergency-alerts",
+        "fall-detection",
+        "firebase",
+        "python",
+        "raspberry-pi",
+        "yolov8"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 79,
+      "category": "featured",
+      "pinned": true,
+      "createdAt": "2026-10-25T12:02:33Z",
+      "pushedAt": "2026-10-25T21:23:03Z",
+      "release": "",
+      "license": "MIT",
+      "highlights": [
+        "YOLOv8 pose + gesture detection",
+        "Vosk / Google keyword spotting",
+        "Timed sensor fusion",
+        "Telegram / Firebase / GSM alerts"
+      ],
+      "caseStudy": "/work/guardian-eye/",
+      "cover": "guardian-eye"
+    },
+    {
+      "slug": "metasploitable",
+      "name": "Metasploitable Probe",
+      "tagline": "Vulnerability assessment and service enumeration in an isolated lab.",
+      "description": "An OpenVAS, Nikto, Nmap, and Netcat assessment of a Metasploitable 2 virtual machine, with evidence and remediation notes.",
+      "url": "https://github.com/yedu1337/6-metasploitable-probe",
+      "homepage": "",
+      "language": "Security lab",
+      "topics": [
+        "openvas",
+        "nikto",
+        "nmap",
+        "metasploitable",
+        "vulnerability-assessment"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 1,
+      "category": "lab",
+      "pinned": false,
+      "createdAt": "2026-07-16T17:38:19Z",
+      "pushedAt": "2026-07-16T18:03:12Z",
+      "release": "",
+      "license": "",
+      "highlights": [
+        "OpenVAS report",
+        "Nikto web assessment",
+        "Service banners"
+      ],
+      "caseStudy": "/lab/metasploitable/",
+      "cover": ""
+    },
+    {
+      "slug": "nmap",
+      "name": "Nmap Full-Port Scan",
+      "tagline": "Building a complete service inventory for a lab target.",
+      "description": "A full TCP port scan with service detection against Metasploitable 2, saved as reproducible evidence.",
+      "url": "https://github.com/yedu1337/7-nmap-scan",
+      "homepage": "",
+      "language": "Security lab",
+      "topics": [
+        "nmap",
+        "enumeration",
+        "metasploitable",
+        "tcp"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 0,
+      "category": "lab",
+      "pinned": false,
+      "createdAt": "2026-07-16T19:29:31Z",
+      "pushedAt": "2026-07-16T19:32:12Z",
+      "release": "",
+      "license": "",
+      "highlights": [
+        "Full TCP range",
+        "Service detection",
+        "Saved output"
+      ],
+      "caseStudy": "/lab/nmap/",
+      "cover": ""
+    },
+    {
+      "slug": "wireshark",
+      "name": "Wireshark ICMP Capture",
+      "tagline": "Comparing round-trip time across localhost, LAN, and the internet.",
+      "description": "A packet-capture exercise comparing ICMP echo requests and replies to three destinations.",
+      "url": "https://github.com/yedu1337/5-wireshark",
+      "homepage": "",
+      "language": "Security lab",
+      "topics": [
+        "wireshark",
+        "icmp",
+        "networking",
+        "packet-analysis"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 0,
+      "category": "lab",
+      "pinned": false,
+      "createdAt": "2026-07-11T10:02:44Z",
+      "pushedAt": "2026-07-11T10:51:05Z",
+      "release": "",
+      "license": "",
+      "highlights": [
+        "ICMP analysis",
+        "Latency comparison",
+        "Capture filters"
+      ],
+      "caseStudy": "/lab/wireshark/",
+      "cover": ""
+    },
+    {
+      "slug": "foundations",
+      "name": "Linux & Scripting Foundations",
+      "tagline": "Small scripts, clear mental models.",
+      "description": "A set of Linux CLI and scripting exercises covering permissions, arguments, interpreted languages, and basic automation.",
+      "url": "https://github.com/yedu1337/4-scripting",
+      "homepage": "",
+      "language": "Bash / Python",
+      "topics": [
+        "linux",
+        "bash",
+        "python",
+        "scripting"
+      ],
+      "stars": 0,
+      "forks": 0,
+      "score": 0,
+      "category": "lab",
+      "pinned": false,
+      "createdAt": "2026-06-29T16:59:09Z",
+      "pushedAt": "2026-06-29T17:23:08Z",
+      "release": "",
+      "license": "",
+      "highlights": [
+        "Bash",
+        "Python",
+        "Permissions",
+        "Arguments"
+      ],
+      "caseStudy": "/lab/foundations/",
+      "cover": ""
+    }
+  ]
+}

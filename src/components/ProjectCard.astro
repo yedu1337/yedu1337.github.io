@@ -1,0 +1,83 @@
+---
+import ProjectVisual from './ProjectVisual.astro';
+
+interface Project {
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  url: string;
+  language: string;
+  release?: string;
+  license?: string;
+  highlights?: string[];
+  caseStudy?: string;
+  pushedAt?: string;
+}
+
+interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+const number = String(index + 1).padStart(2, '0');
+const updated = project.pushedAt
+  ? new Date(project.pushedAt).toLocaleDateString('en', { month: 'short', year: 'numeric' })
+  : '2026';
+const hasCaseStudy = project.caseStudy?.startsWith('/work/');
+const status = project.release || 'Active build';
+---
+
+<article class="project-card reveal">
+  <div class="project-visual">
+    <ProjectVisual slug={project.slug} />
+  </div>
+
+  <div class="project-content">
+    <div class="project-topline">
+      <span class="project-index">{number} / FEATURED</span>
+      <span class="project-status">{status}</span>
+    </div>
+
+    <h3 class="project-title">{project.name}</h3>
+    <p class="project-tagline">{project.tagline}</p>
+    <p class="project-description">{project.description}</p>
+
+    {project.highlights && project.highlights.length > 0 && (
+      <div class="project-highlights">
+        {project.highlights.map((item) => <span class="project-highlight">{item}</span>)}
+      </div>
+    )}
+
+    <div class="project-meta">
+      <div class="project-stat">
+        <span class="project-stat-value">{project.language}</span>
+        <span class="project-stat-label">stack</span>
+      </div>
+      <div class="project-stat">
+        <span class="project-stat-value">{updated}</span>
+        <span class="project-stat-label">updated</span>
+      </div>
+      <div class="project-stat">
+        <span class="project-stat-value">{project.license || '—'}</span>
+        <span class="project-stat-label">license</span>
+      </div>
+    </div>
+
+    <div class="project-actions">
+      {hasCaseStudy ? (
+        <a class="button button-secondary" href={project.caseStudy}>
+          Read case study <span aria-hidden="true">→</span>
+        </a>
+      ) : (
+        <a class="button button-secondary" href={project.url} target="_blank" rel="noreferrer">
+          View repository <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      <a class="button button-ghost" href={project.url} target="_blank" rel="noreferrer">
+        GitHub <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</article>

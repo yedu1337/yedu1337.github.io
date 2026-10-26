@@ -1,0 +1,204 @@
+---
+import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
+import ProjectVisual from '../../components/ProjectVisual.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'rules', label: 'Decision engine' },
+  { id: 'privacy', label: 'Privacy & safety' },
+  { id: 'evidence', label: 'Evidence' },
+  { id: 'limits', label: 'Limits & next' },
+];
+---
+
+<CaseStudyLayout
+  title="Guardian-Eye"
+  subtitle="A multi-modal emergency detector that treats false positives as a design problem, not an inconvenience."
+  kicker="Case study / Real-time detection"
+  description="Guardian-Eye combines YOLOv8 pose estimation, gesture recognition, keyword spotting, and timed sensor fusion to detect emergencies and alert contacts through multiple channels."
+  meta={[
+    { label: 'Role', value: 'Engine, decision logic, dashboard' },
+    { label: 'Timeline', value: '2026' },
+    { label: 'Stack', value: 'Python · React · YOLOv8 · Firebase' },
+    { label: 'Status', value: 'Active build · MIT' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/Guardian-Eye`}
+  outcomes={[
+    { value: '3', label: 'signal sources' },
+    { value: '5', label: 'timed rules' },
+    { value: '3', label: 'alert channels' },
+    { value: '1', label: 'live dashboard' },
+  ]}
+>
+  <ProjectVisual slot="visual" slug="guardian-eye" />
+
+  <section id="overview" class="article-section">
+    <h2>Overview</h2>
+    <p>
+      A camera-only fall detector is easy to demo and hard to trust. A person sits down
+      quickly, a chair occludes a limb, or the lighting changes — and the system calls for
+      help. The opposite failure is worse: a real fall is missed because one signal was
+      ambiguous.
+    </p>
+    <p>
+      Guardian-Eye explores a different design. Three independent signals — vision, gesture,
+      and voice — feed a timed decision engine. An alert requires persistence or agreement
+      between signals, and the result is delivered through more than one channel.
+    </p>
+    <div class="article-callout">
+      <strong>Design goal</strong>
+      Keep inference local, make false positives expensive, and make a real emergency hard
+      to miss. This is a safety tool, not a medical device.
+    </div>
+  </section>
+
+  <section id="architecture" class="article-section">
+    <h2>Architecture</h2>
+    <p>
+      The edge engine runs on a Raspberry Pi, laptop, or desktop. Python's
+      <code>multiprocessing</code> keeps video inference and audio listening from blocking
+      each other. The browser dashboard is a separate React application in the same
+      repository.
+    </p>
+    <div class="article-code">
+      <span class="c"># signal path</span><br />
+      Camera&nbsp;&nbsp;&nbsp;→ YOLOv8 pose + gesture&nbsp;&nbsp;┐<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├→ Decision engine → Firebase<br />
+      Microphone → Vosk / Google Speech&nbsp;&nbsp;&nbsp;&nbsp;┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ Telegram<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ GSM SMS
+    </div>
+    <p>
+      Vision runs on-device. English keyword spotting uses Vosk locally. Malayalam
+      recognition uses Google Speech when connectivity is available — an explicit
+      trade-off between coverage and privacy.
+    </p>
+    <p>
+      The dashboard shows a full-screen alert while it is open, but it is not the only
+      delivery path. Telegram and the optional SIM800L GSM module are the out-of-app
+      channels.
+    </p>
+  </section>
+
+  <section id="rules" class="article-section">
+    <h2>Decision engine</h2>
+    <p>
+      The engine combines the streams with timed state-machine rules. The first matching
+      rule wins. Persistence is the main false-positive guard: a fall has to remain a fall.
+    </p>
+    <div class="article-table-wrap">
+      <table class="article-table">
+        <thead>
+          <tr>
+            <th>Condition</th>
+            <th>Alert reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fall persists for ≥ 10 seconds</td>
+            <td>Fall detected for ≥ 10 seconds</td>
+          </tr>
+          <tr>
+            <td>Fall ≥ 5 seconds plus a voice keyword</td>
+            <td>Fall ≥ 5 seconds + voice emergency keyword</td>
+          </tr>
+          <tr>
+            <td>3 voice keywords within 20 seconds</td>
+            <td>Voice emergency keyword repeated ≥ 3 times within 20 seconds</td>
+          </tr>
+          <tr>
+            <td>Hand on chest for ≥ 10 seconds</td>
+            <td>Hand on chest detected for ≥ 10 seconds</td>
+          </tr>
+          <tr>
+            <td>Hand on chest plus a voice keyword</td>
+            <td>Hand on chest + voice emergency keyword</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The rules are deliberately conservative. A single frame, a single word, or a single
+      gesture is not enough. The trade-off is latency: a real emergency may take a few
+      seconds longer to confirm.
+    </p>
+  </section>
+
+  <section id="privacy" class="article-section">
+    <h2>Privacy & safety</h2>
+    <ul>
+      <li>
+        <strong>Local by default.</strong> Vision and English audio inference run on-device.
+        Continuous video is not uploaded to a cloud service.
+      </li>
+      <li>
+        <strong>Explicit cloud boundary.</strong> Malayalam recognition sends audio to
+        Google Speech when online. That boundary is documented rather than hidden.
+      </li>
+      <li>
+        <strong>Authenticated dashboard.</strong> Firebase access is governed by rules in
+        the repository; the dashboard is not an open endpoint.
+      </li>
+      <li>
+        <strong>Multiple channels.</strong> A closed browser tab should not be the reason an
+        alert is lost. Telegram and GSM provide independent paths.
+      </li>
+      <li>
+        <strong>No clinical claim.</strong> The system is not a medical device and does not
+        replace emergency services. It is designed to augment a care plan, not certify one.
+      </li>
+    </ul>
+    <div class="article-callout">
+      <strong>Safety note</strong>
+      Any real deployment needs informed consent, a clear escalation path, and testing with
+      the people who will actually use it. A demo is not a deployment.
+    </div>
+  </section>
+
+  <section id="evidence" class="article-section">
+    <h2>Evidence</h2>
+    <p>
+      The repository contains the edge engine, the decision rules, the React dashboard, the
+      Firebase rules, the demo mode, and setup instructions for a Raspberry Pi. The README
+      documents the architecture and the exact alert conditions.
+    </p>
+    <p>
+      The most important engineering evidence is the rule design: three noisy signals are
+      combined in a way that can be explained, tested, and tuned. That is more useful than
+      a single accuracy number without a dataset behind it.
+    </p>
+  </section>
+
+  <section id="limits" class="article-section">
+    <h2>Limits & next</h2>
+    <ul>
+      <li>
+        <strong>Vision is sensitive to the scene.</strong> Lighting, occlusion, camera angle,
+        and unusual body positions can produce false negatives or false positives.
+      </li>
+      <li>
+        <strong>Malayalam needs connectivity.</strong> The cloud path improves coverage but
+        changes the privacy model.
+      </li>
+      <li>
+        <strong>GSM is hardware-dependent.</strong> SMS delivery depends on the module,
+        carrier, and signal. It is a fallback, not a guarantee.
+      </li>
+      <li>
+        <strong>No clinical validation.</strong> The system has not been evaluated against a
+        diverse, labeled dataset or in a clinical study.
+      </li>
+      <li>
+        <strong>Resource constraints.</strong> Continuous inference on a Raspberry Pi needs
+        thermal and battery testing before long-term use.
+      </li>
+    </ul>
+    <p>
+      Next: on-device Malayalam recognition, a more diverse test set, alert acknowledgment
+      and escalation, and privacy-preserving performance metrics.
+    </p>
+  </section>
+</CaseStudyLayout>

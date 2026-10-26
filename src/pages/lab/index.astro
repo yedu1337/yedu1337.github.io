@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import LabCard from '../../components/LabCard.astro';
+import { labs } from '../../data/labs';
+import projectsData from '../../data/projects.json';
+
+const curatedPaths = new Set(labs.map((lab) => `/lab/${lab.slug}/`));
+const repositoryLabs = projectsData.projects.filter(
+  (project) => project.category === 'lab' && !curatedPaths.has(project.caseStudy || ''),
+);
+---
+
+<BaseLayout title="Lab notes" description="Short, reproducible security lab notes from an isolated home lab: Nmap, OpenVAS, Nikto, Wireshark, Linux, and scripting.">
+  <header class="article-header container">
+    <div class="article-kicker">Lab <span>/</span> Notes</div>
+    <h1 class="article-title">Lab notes</h1>
+    <p class="article-subtitle">
+      Short, reproducible notes from an isolated home lab. The goal is methodology:
+      enumerate, verify, explain, remediate. All testing is against systems I own or have
+      explicit permission to test.
+    </p>
+  </header>
+
+  <section class="section container">
+    <SectionLabel index="01" label="Notes" />
+
+    <div class="lab-grid">
+      {labs.map((lab) => <LabCard lab={lab} />)}
+    </div>
+
+    {repositoryLabs.length > 0 && (
+      <>
+        <div style="margin-top: 64px;">
+          <SectionLabel index="02" label="Repository labs" />
+          <p class="section-copy" style="margin-bottom: 24px;">
+            Repositories detected by the project sync and published after review. These
+            have no long-form note yet, so the link goes straight to the source and evidence.
+          </p>
+          <div class="lab-grid">
+            {repositoryLabs.map((project, index) => (
+              <a
+                class="lab-card reveal"
+                href={project.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Open repository: ${project.name}`}
+              >
+                <div class="lab-card-top">
+                  <span class="lab-index">{String(index + 1).padStart(2, '0')} / REPO</span>
+                  <span class="lab-date">{project.pushedAt ? new Date(project.pushedAt).toISOString().slice(0, 10) : 'Active'}</span>
+                </div>
+                <h3 class="lab-title">{project.name}</h3>
+                <p class="lab-summary">{project.tagline || project.description}</p>
+                <div class="lab-command">
+                  <code>{project.language || 'Open source'}</code>
+                </div>
+                <div class="lab-footer">
+                  <div class="lab-tags">
+                    {(project.topics || []).slice(0, 3).map((topic) => <span class="chip">{topic}</span>)}
+                  </div>
+                  <span class="lab-read">Repository ↗</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </>
+    )}
+
+    <div class="article-callout" style="margin-top: 40px;">
+      <strong>Ethics</strong>
+      Every note here was produced in an isolated lab or against a deliberately vulnerable
+      VM on a host-only network. No production systems, third-party services, or public
+      targets were tested.
+    </div>
+  </section>
+</BaseLayout>

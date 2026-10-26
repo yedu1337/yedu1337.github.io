@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+interface MetaItem {
+  label: string;
+  value: string;
+}
+
+interface Section {
+  id: string;
+  label: string;
+}
+
+interface Outcome {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  subtitle: string;
+  kicker: string;
+  description: string;
+  meta: MetaItem[];
+  sections: Section[];
+  repoUrl: string;
+  demoUrl?: string;
+  outcomes?: Outcome[];
+}
+
+const { title, subtitle, kicker, description, meta, sections, repoUrl, demoUrl, outcomes } = Astro.props;
+const hasVisual = Astro.slots.has('visual');
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <article>
+    <header class="article-header container">
+      <a class="back-link" href="/work/">← All work</a>
+      <div class="article-kicker">{kicker} <span>/</span> 2026</div>
+      <h1 class="article-title">{title}</h1>
+      <p class="article-subtitle">{subtitle}</p>
+
+      <div class="article-meta">
+        {meta.map((item) => (
+          <div class="article-meta-item">
+            <div class="article-meta-label">{item.label}</div>
+            <div class="article-meta-value">{item.value}</div>
+          </div>
+        ))}
+      </div>
+    </header>
+
+    {hasVisual && (
+      <div class="container">
+        <div class="article-hero-visual">
+          <slot name="visual" />
+        </div>
+      </div>
+    )}
+
+    <div class="article-body container">
+      <aside class="toc" aria-label="On this page">
+        <div class="toc-label">On this page</div>
+        {sections.map((section) => (
+          <a href={`#${section.id}`}>{section.label}</a>
+        ))}
+      </aside>
+
+      <div class="article-content">
+        <slot />
+
+        {outcomes && outcomes.length > 0 && (
+          <div class="article-outcomes" aria-label="At a glance">
+            {outcomes.map((outcome) => (
+              <div class="outcome">
+                <div class="outcome-value">{outcome.value}</div>
+                <div class="outcome-label">{outcome.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div class="article-links">
+          <a class="button button-secondary" href={repoUrl} target="_blank" rel="noreferrer">
+            View repository <span aria-hidden="true">↗</span>
+          </a>
+          {demoUrl && (
+            <a class="button button-ghost" href={demoUrl} target="_blank" rel="noreferrer">
+              Live demo <span aria-hidden="true">↗</span>
+            </a>
+          )}
+          <a class="button button-ghost" href="/work/">Back to work</a>
+        </div>
+
+        <footer class="article-footer">
+          <p class="micro">
+            Written by {SITE.name} · 2026 · If you find a security issue, see the
+            <a href="/security/"> disclosure policy</a>.
+          </p>
+        </footer>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

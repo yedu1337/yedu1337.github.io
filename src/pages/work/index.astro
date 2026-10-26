@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import { SITE } from '../../consts';
+import projectsData from '../../data/projects.json';
+
+const featured = projectsData.projects.filter((project) => project.category === 'featured');
+const caseStudyCount = featured.filter((project) => project.caseStudy?.startsWith('/work/')).length;
+const repositoryCount = featured.length - caseStudyCount;
+const subtitle =
+  repositoryCount > 0
+    ? `${caseStudyCount} deep ${caseStudyCount === 1 ? 'dive' : 'dives'} and ${repositoryCount} selected ${repositoryCount === 1 ? 'repository' : 'repositories'} — architecture, security decisions, and the limits I would fix next.`
+    : 'Deep dives into the systems I build — the problem, the architecture, the security decisions, and the limits I would fix next.';
+---
+
+<BaseLayout title="Selected work" description="Case studies and selected repositories — architecture, security decisions, evidence, and limits.">
+  <header class="article-header container">
+    <div class="article-kicker">Work <span>/</span> Case studies</div>
+    <h1 class="article-title">Selected work</h1>
+    <p class="article-subtitle">{subtitle}</p>
+  </header>
+
+  <section class="section container">
+    <SectionLabel index="01" label="Projects" />
+
+    <div class="index-grid">
+      {featured.map((project) => {
+        const isCaseStudy = project.caseStudy?.startsWith('/work/');
+        const href = project.caseStudy || project.url;
+        return (
+          <a
+            class="index-card reveal"
+            href={href}
+            target={isCaseStudy ? undefined : '_blank'}
+            rel={isCaseStudy ? undefined : 'noreferrer'}
+          >
+            <div class="project-topline">
+              <span class="project-index">{isCaseStudy ? 'CASE STUDY' : 'REPOSITORY'}</span>
+              <span class="project-status">{project.release || 'Active build'}</span>
+            </div>
+            <h2>{project.name}</h2>
+            <p>{project.tagline}</p>
+            <p>{project.description}</p>
+            <div class="chip-row">
+              {project.topics.slice(0, 4).map((topic) => <span class="chip">{topic}</span>)}
+            </div>
+            <span class="text-link" style="margin-top: 8px;">
+              {isCaseStudy ? 'Read case study' : 'View repository'}
+            </span>
+          </a>
+        );
+      })}
+    </div>
+
+    <div style="margin-top: 40px;">
+      <a class="text-link" href={SITE.githubUrl} target="_blank" rel="noreferrer">More on GitHub</a>
+    </div>
+  </section>
+</BaseLayout>

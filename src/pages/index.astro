@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionLabel from '../components/SectionLabel.astro';
+import Terminal from '../components/Terminal.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import LabCard from '../components/LabCard.astro';
+import { SITE } from '../consts';
+import projectsData from '../data/projects.json';
+import { labs } from '../data/labs';
+import { toolbox } from '../data/toolbox';
+
+const featured = projectsData.projects.filter((project) => project.category === 'featured');
+const primary = featured.slice(0, 2);
+const extra = featured.slice(2);
+const focus = SITE.focus.join(' · ');
+---
+
+<BaseLayout title={SITE.name} description={SITE.description}>
+  <section class="hero container">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">
+        <span class="status-dot" aria-hidden="true"></span>
+        {SITE.availability}
+      </p>
+
+      <h1 class="hero-title">
+        I build tools that make systems <span class="accent">harder to break.</span>
+      </h1>
+
+      <p class="lede">
+        I’m {SITE.name}, a cybersecurity-focused developer. I work on encrypted tunnels,
+        real-time detection, and hands-on security labs — and I document the trade-offs,
+        not just the wins.
+      </p>
+
+      <div class="hero-actions">
+        <a class="button button-primary" href="#work">Explore selected work <span aria-hidden="true">→</span></a>
+        <a class="button button-secondary" href="/lab/">Read lab notes</a>
+        <a class="button button-ghost" href={SITE.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+
+      <dl class="hero-meta">
+        <div class="meta-item">
+          <dt class="meta-label">Focus</dt>
+          <dd class="meta-value">{focus}</dd>
+        </div>
+        <div class="meta-item">
+          <dt class="meta-label">Building</dt>
+          <dd class="meta-value">Ghost-Proxy <span>+</span> Guardian-Eye</dd>
+        </div>
+        <div class="meta-item">
+          <dt class="meta-label">Status</dt>
+          <dd class="meta-value"><span class="accent">●</span> Open to opportunities</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="hero-terminal reveal">
+      <Terminal />
+    </div>
+  </section>
+
+  <section id="work" class="section container">
+    <SectionLabel index="01" label="Selected work" />
+
+    <div class="section-head">
+      <h2 class="section-title">Systems, built end to end.</h2>
+      <p class="section-copy">
+        A self-hosted encrypted tunnel, a multi-modal emergency detector, and the
+        open-source work around them. Each project is documented and built to be
+        understood — not just demoed.
+      </p>
+    </div>
+
+    <div class="work-list">
+      {primary.map((project, index) => <ProjectCard project={project} index={index} />)}
+    </div>
+
+    {extra.length > 0 && (
+      <div class="work-more">
+        {extra.map((project) => (
+          <a class="work-more-card reveal" href={project.caseStudy ?? project.url} target={project.caseStudy ? undefined : '_blank'} rel={project.caseStudy ? undefined : 'noreferrer'}>
+            <span class="project-index">MORE / FEATURED</span>
+            <h3>{project.name}</h3>
+            <p>{project.tagline}</p>
+            <div class="chip-row">
+              {project.topics.slice(0, 3).map((topic) => <span class="chip">{topic}</span>)}
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div style="margin-top: 28px;">
+      <a class="text-link" href="/work/">All case studies</a>
+    </div>
+  </section>
+
+  <section id="lab" class="section container">
+    <SectionLabel index="02" label="Lab notes" />
+
+    <div class="section-head">
+      <h2 class="section-title">Learning in public.</h2>
+      <p class="section-copy">
+        Short, reproducible notes from an isolated home lab. The goal is methodology:
+        enumerate, verify, explain, remediate.
+      </p>
+    </div>
+
+    <div class="lab-grid">
+      {labs.map((lab) => <LabCard lab={lab} />)}
+    </div>
+
+    <div style="margin-top: 28px;">
+      <a class="text-link" href="/lab/">All lab notes</a>
+    </div>
+  </section>
+
+  <section id="about" class="section container">
+    <SectionLabel index="03" label="About" />
+
+    <div class="about-grid">
+      <div class="about-copy reveal">
+        <h2>Security is a property of the whole system.</h2>
+        <p>
+          I’m {SITE.name}, a cybersecurity-focused developer. I like the part where a
+          system’s assumptions break — then designing the smallest change that makes it hold.
+        </p>
+        <p>
+          My work sits between security and product: a SOCKS5 tunnel with a threat model,
+          a fall detector that fuses three noisy signals, and lab notes that show the
+          evidence behind the conclusion.
+        </p>
+        <p>
+          I’m currently exploring security engineering, SOC analysis, and offensive security.
+          If you’re hiring for a junior role or want to collaborate, I’d like to hear from you.
+        </p>
+        <div style="margin-top: 26px;">
+          <a class="text-link" href="/about/">More about me</a>
+        </div>
+      </div>
+
+      <div class="principles reveal" aria-label="How I work">
+        <div class="principle">
+          <span class="principle-number">01</span>
+          <div>
+            <h3 class="principle-title">Threat model first</h3>
+            <p class="principle-text">Know what you’re protecting and who you’re protecting it from before choosing tools.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <span class="principle-number">02</span>
+          <div>
+            <h3 class="principle-title">Make the secure path the easy path</h3>
+            <p class="principle-text">Security that requires heroics gets bypassed. Defaults matter.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <span class="principle-number">03</span>
+          <div>
+            <h3 class="principle-title">Document the limits</h3>
+            <p class="principle-text">A known limitation is engineering. An unknown one is a vulnerability.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <span class="principle-number">04</span>
+          <div>
+            <h3 class="principle-title">Test only what you own</h3>
+            <p class="principle-text">Labs are isolated; testing is authorized. No exceptions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbox reveal">
+      {toolbox.map((group) => (
+        <div class="tool-group">
+          <div class="tool-label">{group.label}</div>
+          <div class="tool-items">
+            {group.items.map((item) => <span class="chip">{item}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="now-strip reveal">
+      <div class="now-item">
+        <div class="now-label">Building</div>
+        <div class="now-value">Ghost-Proxy <span>packaging, TLS automation, protocol hardening</span></div>
+      </div>
+      <div class="now-item">
+        <div class="now-label">Learning</div>
+        <div class="now-value">Detection engineering <span>web security, cloud networking</span></div>
+      </div>
+      <div class="now-item">
+        <div class="now-label">Open to</div>
+        <div class="now-value">Security engineering <span>SOC, offensive security, collaboration</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section container">
+    <SectionLabel index="04" label="Contact" />
+
+    <div class="contact-panel reveal">
+      <h2>Let’s build something that holds up.</h2>
+      <p>
+        I’m open to internships, junior security roles, and collaborations on security
+        or systems projects. If you want to compare threat models or trade lab notes,
+        my inbox is open.
+      </p>
+      <div class="contact-actions">
+        <a class="button button-primary" href={`mailto:${SITE.email}`}>Email me <span aria-hidden="true">→</span></a>
+        <button class="button button-secondary" type="button" data-copy-email data-email={SITE.email}>Copy email</button>
+        <a class="button button-ghost" href={SITE.githubUrl} target="_blank" rel="noreferrer">GitHub ↗</a>
+        {SITE.linkedinUrl && (
+          <a class="button button-ghost" href={SITE.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        )}
+      </div>
+      <p class="micro">No trackers. No cookies. Just a static site.</p>
+    </div>
+  </section>
+</BaseLayout>

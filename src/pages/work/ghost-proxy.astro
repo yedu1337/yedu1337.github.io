@@ -1,0 +1,203 @@
+---
+import CaseStudyLayout from '../../layouts/CaseStudyLayout.astro';
+import ProjectVisual from '../../components/ProjectVisual.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'security', label: 'Security decisions' },
+  { id: 'build', label: 'What I built' },
+  { id: 'evidence', label: 'Evidence' },
+  { id: 'limits', label: 'Limits & next' },
+];
+---
+
+<CaseStudyLayout
+  title="Ghost-Proxy"
+  subtitle="An encrypted SOCKS5 tunnel for a trusted group — built to be installed, operated, and understood without a control panel."
+  kicker="Case study / Network security"
+  description="Ghost-Proxy is a self-hosted SOCKS5 proxy with a TLS 1.3 + PSK tunnel, ChaCha20-Poly1305, traffic padding, and single-binary client and gateway."
+  meta={[
+    { label: 'Role', value: 'Design, implementation, packaging, docs' },
+    { label: 'Timeline', value: '2026' },
+    { label: 'Stack', value: 'Go · TLS 1.3 · SOCKS5' },
+    { label: 'Status', value: 'v0.2.1 · MIT' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/Ghost-Proxy`}
+  outcomes={[
+    { value: '3', label: 'tagged releases' },
+    { value: '4', label: 'platform packages' },
+    { value: '2', label: 'single binaries' },
+    { value: 'MIT', label: 'license' },
+  ]}
+>
+  <ProjectVisual slot="visual" slug="ghost-proxy" />
+
+  <section id="overview" class="article-section">
+    <h2>Overview</h2>
+    <p>
+      A small trusted group needs a private exit point. Commercial VPNs and proxy panels
+      work, but they add accounts, dashboards, and a provider that sees the traffic.
+      Ghost-Proxy explores a smaller design: one gateway you control, one client, and a
+      single shared secret.
+    </p>
+    <p>
+      The constraints were practical. No domain should be required. The client should
+      guide a non-expert through first-run setup. The gateway should install on a cheap
+      Linux VPS and keep working without a control panel. The result is a pair of Go
+      binaries that speak SOCKS5 locally and an authenticated TLS tunnel upstream.
+    </p>
+    <div class="article-callout">
+      <strong>Threat model in one line</strong>
+      The adversary is a network observer or a leaked PSK — not a malicious server
+      operator. The gateway is trusted by design.
+    </div>
+  </section>
+
+  <section id="architecture" class="article-section">
+    <h2>Architecture</h2>
+    <p>
+      The client listens on <code>127.0.0.1:1080</code> and speaks SOCKS5 to local
+      applications. It opens a TLS 1.3 connection to the gateway, authenticates with a
+      pre-shared key, and forwards only the destinations the gateway allows.
+    </p>
+    <div class="article-code">
+      <span class="c"># data path</span><br />
+      Application<br />
+      &nbsp;&nbsp;→ 127.0.0.1:1080 <span class="c">(SOCKS5)</span><br />
+      &nbsp;&nbsp;→ Ghost client<br />
+      &nbsp;&nbsp;→ TLS 1.3 + PSK + ChaCha20-Poly1305<br />
+      &nbsp;&nbsp;→ Ghost gateway<br />
+      &nbsp;&nbsp;→ allowlisted destination
+    </div>
+    <p>
+      On Linux, the installer obtains a Let's Encrypt certificate for the server's public
+      IP, installs a systemd service, and schedules daily renewal. A domain is optional.
+      An IP certificate removes the domain requirement, but it ties the certificate to a
+      stable address.
+    </p>
+    <p>
+      The client and gateway are single binaries. Releases include Linux and Windows
+      builds for both sides, plus <code>SHA256SUMS.txt</code> for verification.
+    </p>
+  </section>
+
+  <section id="security" class="article-section">
+    <h2>Security decisions</h2>
+    <p>
+      The interesting part of a proxy is not the forwarding path. It is the set of
+      assumptions around identity, exposure, and failure.
+    </p>
+    <ul>
+      <li>
+        <strong>Transport.</strong> TLS 1.3 with a pre-shared key, then
+        ChaCha20-Poly1305 for the tunnel. The PSK is stored in a root-only environment
+        file on the gateway and in a local <code>ghost.env</code> on the client.
+      </li>
+      <li>
+        <strong>Exposure.</strong> The client listens only on loopback. The gateway runs
+        as an unprivileged systemd service. Private, loopback, link-local, and
+        unspecified destinations are rejected even when the allowlist is empty.
+      </li>
+      <li>
+        <strong>Traffic shape.</strong> Optional padding and jitter reduce size and timing
+        leakage. They do not make traffic indistinguishable. This is a mitigation, not
+        anonymity.
+      </li>
+      <li>
+        <strong>Key lifecycle.</strong> <code>install.sh --new-psk</code> rotates the
+        shared key and prints a new invite. Every user must update; the old key stops
+        working when the gateway restarts.
+      </li>
+      <li>
+        <strong>Supply chain.</strong> CI, tests, release artifacts, and checksums. Windows
+        binaries are unsigned, so SmartScreen warnings are expected and documented.
+      </li>
+    </ul>
+    <div class="article-callout">
+      <strong>What I would audit first</strong>
+      PSK handling, replay behavior, padding correctness, and the destination parser.
+      Those are the places where a small mistake has the largest impact.
+    </div>
+  </section>
+
+  <section id="build" class="article-section">
+    <h2>What I built</h2>
+    <p>
+      The project is deliberately operational. The README covers installation, browser
+      configuration, key rotation, upgrades, firewall rules, and the failure modes a user
+      is likely to hit.
+    </p>
+    <ul>
+      <li>
+        <strong>Guided setup.</strong> The client asks for the server address, TLS name,
+        optional CA certificate, and PSK. No YAML editing on the normal path.
+      </li>
+      <li>
+        <strong>Operator path.</strong> A one-command Linux installer, a manual systemd
+        path for advanced users, and Windows packages for testing or a small private group.
+      </li>
+      <li>
+        <strong>Connection check.</strong> <code>--check</code> makes a real HTTP request
+        through the tunnel and explains common failures.
+      </li>
+      <li>
+        <strong>Packaging.</strong> Linux and Windows client/server archives,
+        <code>SHA256SUMS.txt</code>, and an MIT license.
+      </li>
+    </ul>
+    <div class="article-code">
+      <span class="c"># server.yaml (excerpt)</span><br />
+      listen_address: <span class="g">"0.0.0.0:443"</span><br />
+      public_host: <span class="g">"203.0.113.10"</span><br />
+      padding_enabled: <span class="a">true</span><br />
+      allowed_destinations: <span class="a">[]</span>  <span class="c"># public destinations; private ranges still blocked</span>
+    </div>
+  </section>
+
+  <section id="evidence" class="article-section">
+    <h2>Evidence</h2>
+    <p>
+      The repository contains protocol notes, traffic-padding notes, performance notes,
+      and deployment documentation. Three tagged releases, four platform packages, and a
+      CI workflow back the build. The project is small enough to read end to end.
+    </p>
+    <p>
+      The most useful evidence is not a feature list. It is the documentation of
+      trade-offs: what the padding does not hide, what the shared key cannot revoke, and
+      which operational assumptions the installer makes.
+    </p>
+  </section>
+
+  <section id="limits" class="article-section">
+    <h2>Limits & next</h2>
+    <ul>
+      <li>
+        <strong>Shared PSK.</strong> There is no per-user identity or revocation. Rotating
+        the key affects everyone.
+      </li>
+      <li>
+        <strong>Padding is not anonymity.</strong> It reduces metadata leakage; it does not
+        defeat a determined observer.
+      </li>
+      <li>
+        <strong>IP certificates are short-lived.</strong> They are tied to a stable address;
+        an IP change requires reissuance.
+      </li>
+      <li>
+        <strong>No external audit.</strong> The code is documented and tested, but it has
+        not been independently reviewed.
+      </li>
+      <li>
+        <strong>The gateway is trusted.</strong> The design protects users from the network,
+        not from the server operator.
+      </li>
+    </ul>
+    <p>
+      Next: per-user keys, replay and fuzz testing, reproducible builds, and an external
+      review of the protocol and PSK lifecycle.
+    </p>
+  </section>
+</CaseStudyLayout>

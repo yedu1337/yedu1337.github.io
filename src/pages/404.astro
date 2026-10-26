@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout title="404 — path not found" description="The page you requested does not exist.">
+  <section class="error-page container">
+    <div>
+      <p class="error-code">404 / path not found</p>
+      <h1 class="error-title">This route does not resolve.</h1>
+      <p class="error-copy">
+        The page may have moved, or the path may never have existed. Try the home page,
+        the work index, or the lab notes.
+      </p>
+      <div class="error-actions">
+        <a class="button button-primary" href="/">Go home <span aria-hidden="true">→</span></a>
+        <a class="button button-secondary" href="/work/">Selected work</a>
+        <a class="button button-ghost" href="/lab/">Lab notes</a>
+      </div>
+      <p class="micro" style="margin-top: 24px;">
+        If you expected something here, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

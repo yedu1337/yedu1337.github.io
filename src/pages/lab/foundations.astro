@@ -1,0 +1,98 @@
+---
+import LabLayout from '../../layouts/LabLayout.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'objective', label: 'Objective' },
+  { id: 'permissions', label: 'Permissions' },
+  { id: 'scripts', label: 'Scripts' },
+  { id: 'interpreted', label: 'Interpreted vs compiled' },
+  { id: 'lesson', label: 'Lesson' },
+];
+---
+
+<LabLayout
+  title="Linux & scripting: the first useful automation"
+  subtitle="Before the exploits, you need the shell to feel obvious."
+  kicker="Foundations / Linux"
+  description="Linux CLI and scripting exercises covering permissions, arguments, interpreted languages, and basic automation with Bash and Python."
+  meta={[
+    { label: 'Environment', value: 'Linux CLI' },
+    { label: 'Languages', value: 'Bash · Python' },
+    { label: 'Tools', value: 'chmod · bash · python3' },
+    { label: 'Date', value: '2026-06-29' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/4-scripting`}
+  outcomes={[
+    { value: '2', label: 'languages' },
+    { value: '2', label: 'scripts' },
+    { value: '1', label: 'habit' },
+    { value: '0', label: 'magic' },
+  ]}
+>
+  <section id="objective" class="article-section">
+    <h2>Objective</h2>
+    <p>
+      Practice the small mechanics that larger security work depends on: navigating the
+      shell, understanding permissions, passing arguments, and running a script the same way
+      twice. The exercises were deliberately simple — a Bash “hello” script and a Python
+      equivalent.
+    </p>
+  </section>
+
+  <section id="permissions" class="article-section">
+    <h2>Permissions</h2>
+    <p>
+      A script is a file with an executable bit. Without it, the shell will refuse to run it
+      directly:
+    </p>
+    <div class="article-code">
+      chmod +x hello.sh<br />
+      ./hello.sh Yedukrishna
+    </div>
+    <p>
+      The permission model is also a security model. Knowing who can read, write, and execute
+      a file is the difference between a tidy lab and an accidental privilege escalation.
+    </p>
+  </section>
+
+  <section id="scripts" class="article-section">
+    <h2>Scripts</h2>
+    <p>
+      Both scripts accept a name as an argument and print a greeting with the current time.
+      The Bash version uses the shell’s date command; the Python version uses the standard
+      library. The output is trivial, but the pattern is not: take input, do something
+      deterministic, print a result.
+    </p>
+    <div class="article-code">
+      <span class="c"># Bash</span><br />
+      ./hello.sh Yedukrishna<br />
+      <span class="c"># Python</span><br />
+      python3 hello.py Yedukrishna
+    </div>
+  </section>
+
+  <section id="interpreted" class="article-section">
+    <h2>Interpreted vs compiled</h2>
+    <p>
+      Bash and Python are interpreted languages: an interpreter reads and executes the
+      program. That is why the executable bit and the shebang matter, and why a missing
+      runtime is a real failure mode. Compiled languages produce a binary ahead of time; the
+      trade-off is a build step and a target-specific artifact.
+    </p>
+    <p>
+      Neither is “better” in the abstract. The right choice depends on the environment, the
+      dependencies, and who has to operate it.
+    </p>
+  </section>
+
+  <section id="lesson" class="article-section">
+    <h2>Lesson</h2>
+    <p>
+      Automation is a security skill. The first useful script is not a scanner; it is a
+      repeatable step that removes a manual mistake. Start small, make it readable, and
+      document what it expects.
+    </p>
+  </section>
+</LabLayout>

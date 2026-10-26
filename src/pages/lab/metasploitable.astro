@@ -1,0 +1,121 @@
+---
+import LabLayout from '../../layouts/LabLayout.astro';
+import { SITE } from '../../consts';
+
+const sections = [
+  { id: 'objective', label: 'Objective' },
+  { id: 'method', label: 'Method' },
+  { id: 'findings', label: 'Findings' },
+  { id: 'triage', label: 'Triage' },
+  { id: 'remediation', label: 'Remediation' },
+  { id: 'lesson', label: 'Lesson' },
+];
+---
+
+<LabLayout
+  title="Metasploitable 2: assessment, not a score"
+  subtitle="OpenVAS, Nikto, and Netcat produce a lot of noise. The skill is triage."
+  kicker="Assessment / Metasploitable"
+  description="A vulnerability assessment and service enumeration exercise against an isolated Metasploitable 2 virtual machine using OpenVAS, Nikto, Nmap, and Netcat."
+  meta={[
+    { label: 'Environment', value: 'Kali Linux · VirtualBox' },
+    { label: 'Target', value: 'Metasploitable 2 (isolated)' },
+    { label: 'Tools', value: 'OpenVAS · Nikto · Nmap · Netcat' },
+    { label: 'Date', value: '2026-07-16' },
+  ]}
+  sections={sections}
+  repoUrl={`${SITE.githubUrl}/6-metasploitable-probe`}
+  outcomes={[
+    { value: '1', label: 'OpenVAS report' },
+    { value: '1', label: 'Nikto report' },
+    { value: '4', label: 'tools used' },
+    { value: '0', label: 'production systems' },
+  ]}
+>
+  <section id="objective" class="article-section">
+    <h2>Objective</h2>
+    <p>
+      Practice a full assessment workflow against a deliberately vulnerable VM: enumerate
+      services, scan for known weaknesses, inspect the web tier, grab banners, and turn the
+      output into a prioritized remediation list.
+    </p>
+    <p>
+      The target was Metasploitable 2 on an isolated host-only network. The output is
+      intentionally not a list of exploits. The goal was assessment and triage.
+    </p>
+  </section>
+
+  <section id="method" class="article-section">
+    <h2>Method</h2>
+    <ul>
+      <li>
+        <strong>OpenVAS / Greenbone.</strong> Ran a vulnerability scan and exported the
+        report with severity, CVSS scores, affected services, and recommended mitigations.
+      </li>
+      <li>
+        <strong>Nmap.</strong> Enumerated services and versions to build the target map.
+      </li>
+      <li>
+        <strong>Nikto.</strong> Assessed the Apache Tomcat service on port 8180 for
+        misconfigurations and exposed paths.
+      </li>
+      <li>
+        <strong>Netcat.</strong> Grabbed service banners to confirm what was listening and
+        what it claimed to be.
+      </li>
+    </ul>
+    <div class="article-code">
+      nikto -h http://192.168.55.198:8180 -o nikto-report.html -Format html
+    </div>
+  </section>
+
+  <section id="findings" class="article-section">
+    <h2>Findings</h2>
+    <p>
+      OpenVAS produced the broadest view: a set of findings with severity ratings, CVSS
+      scores, affected services, and remediation guidance. Nikto flagged web server
+      misconfigurations and exposed paths on the Tomcat instance. Banner grabbing confirmed
+      the service versions behind the ports.
+    </p>
+    <p>
+      The raw reports are the evidence. This note focuses on how I read them, because a
+      scanner report without triage is just a longer list of open ports.
+    </p>
+  </section>
+
+  <section id="triage" class="article-section">
+    <h2>Triage</h2>
+    <p>
+      I sorted findings by three questions: Is the service reachable from a network that
+      matters? Is the weakness exploitable without unusual preconditions? What is the impact
+      if it is? A high CVSS score on a service nobody can reach is less urgent than a medium
+      finding on an exposed management interface.
+    </p>
+    <ul>
+      <li><strong>Exposure:</strong> which network can reach the service?</li>
+      <li><strong>Exploitability:</strong> does it require credentials, user interaction, or a rare configuration?</li>
+      <li><strong>Impact:</strong> confidentiality, integrity, availability — and whose data?</li>
+      <li><strong>Confidence:</strong> did I validate the scanner’s claim, or just repeat it?</li>
+    </ul>
+  </section>
+
+  <section id="remediation" class="article-section">
+    <h2>Remediation</h2>
+    <ul>
+      <li>Patch or upgrade the affected services; remove default applications.</li>
+      <li>Restrict Tomcat and management interfaces to the lab network only.</li>
+      <li>Disable unused services and close unnecessary ports.</li>
+      <li>Harden the web tier: remove sample apps, restrict verbs, review error pages.</li>
+      <li>Run services with least privilege and monitor for unexpected changes.</li>
+    </ul>
+  </section>
+
+  <section id="lesson" class="article-section">
+    <h2>Lesson</h2>
+    <p>
+      Scanners are inputs, not conclusions. The valuable work is validating a finding,
+      understanding exposure, and writing a fix that someone can actually apply. A report
+      that says “critical” without context is not an assessment.
+    </p>
+  </section>
+</LabLayout>

@@ -1,0 +1,50 @@
+{
+  "Ghost-Proxy": {
+    "featured": true,
+    "order": 1,
+    "tagline": "An encrypted SOCKS5 tunnel for hostile networks.",
+    "languageLabel": "Go",
+    "cover": "ghost-proxy"
+  },
+  "Guardian-Eye": {
+    "featured": true,
+    "order": 2,
+    "tagline": "Real-time fall, gesture, and voice emergency detection.",
+    "languageLabel": "Python / JavaScript",
+    "cover": "guardian-eye"
+  },
+  "6-metasploitable-probe": {
+    "category": "lab",
+    "order": 3,
+    "slug": "metasploitable",
+    "caseStudy": "/lab/metasploitable/"
+  },
+  "7-nmap-scan": {
+    "category": "lab",
+    "order": 4,
+    "slug": "nmap",
+    "caseStudy": "/lab/nmap/"
+  },
+  "5-wireshark": {
+    "category": "lab",
+    "order": 5,
+    "slug": "wireshark",
+    "caseStudy": "/lab/wireshark/"
+  },
+  "4-scripting": {
+    "category": "lab",
+    "order": 6,
+    "slug": "foundations",
+    "caseStudy": "/lab/foundations/",
+    "tagline": "Small scripts, clear mental models."
+  },
+  "3-linux-cli-exercise": {
+    "hidden": true
+  },
+  "11-frontend": {
+    "hidden": true
+  },
+  "12-fsd-flask": {
+    "hidden": true
+  }
+}
