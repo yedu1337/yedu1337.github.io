@@ -22,16 +22,16 @@ jobs:
       - name: Checkout portfolio
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Check for profile token
+      - name: Check for profile deploy key
         id: profile
         env:
-          PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN }}
+          PROFILE_DEPLOY_KEY: ${{ secrets.PROFILE_DEPLOY_KEY }}
         run: |
-          if [ -n "$PROFILE_TOKEN" ]; then
+          if [ -n "$PROFILE_DEPLOY_KEY" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::PROFILE_TOKEN is not configured; skipping profile README sync."
+            echo "::notice::PROFILE_DEPLOY_KEY is not configured; skipping profile README sync."
           fi
 
       - name: Checkout profile repository
@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: ${{ github.repository_owner }}/${{ vars.PROFILE_REPO || github.repository_owner }}
-          token: ${{ secrets.PROFILE_TOKEN }}
+          ssh-key: ${{ secrets.PROFILE_DEPLOY_KEY }}
           path: profile-repo
 
       - name: Publish README

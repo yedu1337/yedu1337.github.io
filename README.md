@@ -172,14 +172,26 @@ The profile README is generated from the same data as the site:
 npm run profile
 ```
 
-The optional **Sync profile README** workflow publishes `profile-readme/README.md` to a public repository named `<username>/<username>`. To enable it:
+The optional **Sync profile README** workflow publishes `profile-readme/README.md` to a public repository named `<username>/<username>`. It uses a repo-scoped SSH deploy key, not a broad personal access token.
 
 1. Create the profile repository.
-2. Create a fine-grained personal access token with **Contents: Read and write** on that repository.
-3. Add it as the `PROFILE_TOKEN` repository secret in this repository.
-4. If the profile repository has a different name, add a repository variable `PROFILE_REPO` with that name.
+2. Generate a dedicated key:
+   ```bash
+   ssh-keygen -t ed25519 -C "portfolio-profile-sync" -f profile_deploy_key -N ""
+   ```
+3. Add the public key as a write-enabled deploy key:
+   ```bash
+   gh repo deploy-key add profile_deploy_key.pub \
+     --repo <username>/<username> --allow-write --title "Portfolio profile sync"
+   ```
+4. Store the private key as the `PROFILE_DEPLOY_KEY` secret:
+   ```bash
+   gh secret set PROFILE_DEPLOY_KEY \
+     --repo <username>/<username>.github.io < profile_deploy_key
+   ```
+5. Delete the local key files and, if the profile repository has a different name, add a repository variable `PROFILE_REPO` with that name.
 
-Without the secret, the workflow skips cleanly. The site remains the primary source of truth.
+Without the deploy key, the workflow skips cleanly. The site remains the primary source of truth.
 
 ## Security posture
 
