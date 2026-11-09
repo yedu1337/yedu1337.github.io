@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-26T17:18:10.203Z",
+  "generatedAt": "2026-11-09T12:52:07.859Z",
   "projects": [
     {
       "slug": "ghost-proxy",
@@ -20,7 +20,7 @@
       ],
       "stars": 0,
       "forks": 0,
-      "score": 95,
+      "score": 98,
       "category": "featured",
       "pinned": true,
       "createdAt": "2026-10-25T17:33:43Z",
@@ -55,7 +55,7 @@
       ],
       "stars": 0,
       "forks": 0,
-      "score": 79,
+      "score": 82,
       "category": "featured",
       "pinned": true,
       "createdAt": "2026-10-25T12:02:33Z",
